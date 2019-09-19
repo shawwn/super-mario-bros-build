@@ -186,7 +186,7 @@ def assemble(code, defs):
       else:
         print('Unsupported directive: "%s"' % (line))
     else:
-      m = re.match(r'([a-zA_Z_]+)\s*(.*)?', line)
+      m = re.match(r'([a-zA-Z_]+)\s*(.*)?', line)
       if not m:
         error_at(nr, "Was expecting opcode, don't understand")
       mnem = m.group(1)
