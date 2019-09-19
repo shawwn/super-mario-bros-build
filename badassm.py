@@ -301,3 +301,6 @@ def main():
   name = os.path.splitext(args[0])[0]
   open(name + '.bin', 'wb').write(b)
   open(name + '.map', 'wb').write(bytearray(''.join([ '%s @ %04X\n' % (k, v) for k, v in labels.items() ]), 'utf-8'))
+
+if __name__ == '__main__':
+  main()
