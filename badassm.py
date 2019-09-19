@@ -186,10 +186,14 @@ def assemble(code, defs):
       else:
         print('Unsupported directive: "%s"' % (line))
     else:
-      m = re.match(r'([a-z]+)\s*(.*)?', line)
+      m = re.match(r'([a-zA_Z_]+)\s*(.*)?', line)
       if not m:
         error_at(nr, "Was expecting opcode, don't understand")
       mnem = m.group(1)
+      nop = False
+      if mnem.startswith('_'):
+        mnem = mnem[1:]
+        nop = True
       if mnem not in table:
         error_at(nr, "Unsupported opcode '%s'" % (mnem))
       opr_type = 'N'
@@ -233,8 +237,14 @@ def assemble(code, defs):
         opr_type = 'AY' if 'ZY' == opr_type else 'ZY'
         if opr_type not in table[mnem]:
           error_at(nr, "Invalid operands for instruction '%s'" % (mnem))
-      instr.append(instruction(nr, pc, table[mnem], expr, opr_type))
-      pc += instr[-1]['size']
+      ins = instruction(nr, pc, table[mnem], expr, opr_type)
+      if nop:
+        for j in range(ins['size']):
+          instr.append(instruction(nr, pc, table['nop'], '', 'N'))
+          pc += 1
+      else:
+        instr.append(ins)
+        pc += instr[-1]['size']
   return instr, labels
 
 def get_byte(e):
