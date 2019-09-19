@@ -21,6 +21,8 @@ import sys
 import re
 import os
 
+args = sys.argv[1:]
+
 def run_eval(e, env = {}):
 	try:
 		res = eval(e, { '__builtins__' : None }, env)
@@ -283,19 +285,19 @@ def build(instr, labels):
 		data += operand
 	return bytearray(data)
 
+def main():
+  if len(args) < 1:
+    print('Usage: %s <infile>' % (sys.argv[0]))
 
-if len(sys.argv) < 2:
-	print('Usage: %s <infile>' % (sys.argv[0]))
+  code = [ it.decode('utf-8') for it in open(args[0], 'rb').readlines() ]
+  print('Assembling: %s (%d lines)' % (args[0], len(code)))
+  print('Pass 1')
+  defs = read_defines(code)
+  print('Pass 2')
+  instr, labels = assemble(code, defs)
+  print('Pass 3')
+  b = build(instr, labels)
 
-code = [ it.decode('utf-8') for it in open(sys.argv[1], 'rb').readlines() ]
-print('Assembling: %s (%d lines)' % (sys.argv[1], len(code)))
-print('Pass 1')
-defs = read_defines(code)
-print('Pass 2')
-instr, labels = assemble(code, defs)
-print('Pass 3')
-b = build(instr, labels)
-
-name = os.path.splitext(sys.argv[1])[0]
-open(name + '.bin', 'wb').write(b)
-open(name + '.map', 'wb').write(bytearray(''.join([ '%s @ %04X\n' % (k, v) for k, v in labels.items() ]), 'utf-8'))
+  name = os.path.splitext(args[0])[0]
+  open(name + '.bin', 'wb').write(b)
+  open(name + '.map', 'wb').write(bytearray(''.join([ '%s @ %04X\n' % (k, v) for k, v in labels.items() ]), 'utf-8'))
