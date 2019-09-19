@@ -6280,7 +6280,7 @@ ProcFireball_Bubble:
       and PreviousA_B_Buttons
       bne ProcFireballs          ;if button pressed in previous frame, branch
       lda FireballCounter        ;load fireball counter
-      and #%00000001             ;get LSB and use as offset for buffer
+      and #%00000000             ;get LSB and use as offset for buffer
       tax
       lda Fireball_State,x       ;load fireball state
       bne ProcFireballs          ;if not inactive, branch
@@ -6300,12 +6300,12 @@ ProcFireball_Bubble:
       sty FireballThrowingTimer  ;into fireball throwing timer
       dey
       sty PlayerAnimTimer        ;decrement and store in player's animation timer
-      inc FireballCounter        ;increment fireball counter
+      dec FireballCounter        ;increment fireball counter
 
 ProcFireballs:
       ldx #$00
       jsr FireballObjCore  ;process first fireball object
-      ldx #$01
+      ldx #$00
       jsr FireballObjCore  ;process second fireball object, then do air bubbles
 
 ProcAirBubbles:
